@@ -7,7 +7,7 @@ MCUFRIEND_kbv tft;
 RTC_DS1307 rtc;
 
 //declaração de variaveis globais
-int dia = 3,dia_ant=-1;
+int dia = 0,dia_ant=-1;
 int i = 0; int d = 0;
 char daysOfTheWeek[7][14] = {"Domingo", "Segunda-feira", "Terca-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sabado"};
 

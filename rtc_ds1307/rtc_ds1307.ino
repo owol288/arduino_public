@@ -1,0 +1,84 @@
+// Date and time functions using a DS1307 RTC connected via I2C and Wire lib
+#include <Wire.h>
+#include "RTClib.h"
+#include <MCUFRIEND_kbv.h>
+MCUFRIEND_kbv tft;
+
+RTC_DS1307 rtc;
+
+char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+
+void setup () {
+  while (!Serial); // for Leonardo/Micro/Zero
+
+  Serial.begin(57600);
+  if (! rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    while (1);
+  }
+
+  if (! rtc.isrunning()) {
+    Serial.println("RTC is NOT running!");
+    // following line sets the RTC to the date & time this sketch was compiled
+    // rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    // This line sets the RTC with an explicit date & time, for example to set
+    // January 21, 2014 at 3am you would call:
+    //rtc.adjust(DateTime(2019, 9, 5, 19, 06, 0));
+  }
+
+  Serial.begin(9600);
+  uint16_t ID = 0x1289; 
+  Serial.print("Identificador do display: ");
+  Serial.println(ID,HEX);
+  tft.begin(ID);
+  tft.setRotation(1);
+  tft.fillScreen(0x0000);
+  tft.setCursor(20,100);
+  tft.setTextColor(0x1111);
+  tft.setTextSize(3);
+}
+
+void loop () {
+    DateTime now = rtc.now();
+    
+    tft.print(now.year(), DEC);
+    tft.print('/');
+    tft.print(now.month(), DEC);
+    tft.print('/');
+    tft.print(now.day(), DEC);
+    tft.print(" (");
+    tft.print(daysOfTheWeek[now.dayOfTheWeek()]);
+    tft.print(") ");
+    tft.print(now.hour(), DEC);
+    tft.print(':');
+    tft.print(now.minute(), DEC);
+    tft.print(':');
+    tft.print(now.second(), DEC);
+    tft.println();
+    
+    Serial.print(" since midnight 1/1/1970 = ");
+    Serial.print(now.unixtime());
+    Serial.print("s = ");
+    Serial.print(now.unixtime() / 86400L);
+    Serial.println("d");
+    
+    // calculate a date which is 7 days and 30 seconds into the future
+    DateTime future (now + TimeSpan(7,12,30,6));
+    
+    Serial.print(" now + 7d + 30s: ");
+    Serial.print(future.year(), DEC);
+    Serial.print('/');
+    Serial.print(future.month(), DEC);
+    Serial.print('/');
+    Serial.print(future.day(), DEC);
+    Serial.print(' ');
+    Serial.print(future.hour(), DEC);
+    Serial.print(':');
+    Serial.print(future.minute(), DEC);
+    Serial.print(':');
+    Serial.print(future.second(), DEC);
+    Serial.println();
+    
+    Serial.println();
+    delay(3000);
+}
