@@ -154,7 +154,7 @@ void loop() {
       DateTime now = rtc.now();
       last = now.second();
       toque = obterToque();
-      message(toque);
+      local_toque(toque);
       if(toque==true)
       break; 
   }   
